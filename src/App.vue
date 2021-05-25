@@ -1,11 +1,41 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+
+    <div v-if="user.token">
+      <router-link to="/me">Profil</router-link> |
+      <router-link to="/tasks">Tâches</router-link> |
+      <a href="/login" @click.prevent="logout">Déconnexion</a>
+    </div>
+
+    <div v-if="!user.token">
+      <router-link to="/register">Inscription</router-link> |
+      <router-link to="/login">Connexion</router-link>
+    </div>
+
   </div>
   <router-view/>
 </template>
+<script>
 
+import { mapActions, mapGetters } from "vuex"
+
+
+export default {
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapGetters([
+      'user'
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'logout'
+    ])
+  }
+}
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

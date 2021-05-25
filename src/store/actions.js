@@ -1,8 +1,9 @@
 import axios from 'axios'
+import router from "../router";
 
 export const login = ({ commit, state }, form) => {
     axios.post(
-        'https://tondont-list.herokuapp.com/api/auth/login',
+        'http://sanctumwilliam.herokuapp.com/api/auth/login',
         {
             email: form.email,
             password: form.password,
@@ -15,6 +16,7 @@ export const login = ({ commit, state }, form) => {
         commit('token', response.data.token)
 
         const user = {
+            id: response.data.id,
             name: response.data.name,
             email: response.data.email,
             created_at: response.data.created_at
@@ -22,17 +24,16 @@ export const login = ({ commit, state }, form) => {
 
         commit('data', user)
         state.msg.success = 'you are connected'
-
-
+        router.push('/me');
     }).catch((error) => {
-        state.msg.error = error
+        state.msg.error = 'Mauvais identifiant'
         console.log(error)
     });
 }
 
 export const register = ({ commit, state }, form) => {
     axios.post(
-        'https://tondont-list.herokuapp.com/api/auth/register',
+        'http://sanctumwilliam.herokuapp.com/api/auth/register',
         {
             name: form.name,
             email: form.email,
@@ -53,10 +54,10 @@ export const register = ({ commit, state }, form) => {
 
         commit('data', user)
         state.msg.success = 'Compte enregsitré'
-        // window.location.href="/login"
+        window.location.href="/"
     }).catch((error) => {
-        state.msg.error = error
         console.log(error)
+        state.msg.error = "L'email existe deja"
     });
 }
 
@@ -68,10 +69,10 @@ export const logout = ({ commit, state }) => {
 
     axios.post(
         'https://tondont-list.herokuapp.com/api/auth/logout', {}, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    }).then((response) => {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((response) => {
         console.log(response);
         state.msg.success = 'Vous etes déconnecté'
     }).catch((error) => {
@@ -82,16 +83,16 @@ export const logout = ({ commit, state }) => {
     window.location.href = "/"
 }
 
-export const tasks_user = ({ commit, state }) => {
+export const tasks_user = ({ commit, getters, state }) => {
     console.log(state.user.token)
-    axios.get(
-        'https://tondont-list.herokuapp.com/api/tasks/', {
-        headers: {
-            'Authorization': `Bearer ${state.user.token}`
-        }
-    }).then((response) => {
-        // console.log("action tasks")
-        // console.log(response.data['posts']);
+    axios.post(
+        'http://sanctumwilliam.herokuapp.com/api/tasksuser/',{
+            user_id: getters.user.data.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${state.user.token}`
+            }
+        }).then((response) => {
         const tasks = response.data['posts']
 
         commit('tasks', tasks)
@@ -100,34 +101,11 @@ export const tasks_user = ({ commit, state }) => {
     });
 }
 
-export const task_user = ({ commit, state }, id) => {
-    console.log(state.user.token)
-    axios.get(
-        `https://tondont-list.herokuapp.com/api/tasks/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${state.user.token}`
-        }
-    }).then((response) => {
-        console.log("task_user")
-        console.log(response.data)
-        const task = {
-            id: response.data['id'],
-            body: response.data['body']
-        }
-
-        commit('task', task)
-    }).catch((error) => {
-        console.log(error)
-    });
-}
-
-export const updateTask = ({ commit, state }, task) => {
-    console.log(task.body)
+export const updateTask = ({  state }, task) => {
     axios.put(
-        `https://tondont-list.herokuapp.com/api/tasks/${task.id}`, {
-        body: task.body,
-        done: 1
-    },
+        `http://sanctumwilliam.herokuapp.com/api/tasks/${task.id}`, {
+            body: task.body,
+        },
         {
             headers: {
                 'Authorization': `Bearer ${state.user.token}`
@@ -136,37 +114,36 @@ export const updateTask = ({ commit, state }, task) => {
     ).then((response) => {
         console.log(response);
         state.msg.success = 'task updates'
-        commit('task', task)
+        router.push('/me');
     }).catch((error) => {
         console.log(error)
         state.msg.error = error
     });
 }
 
-export const deleteTask = ({ state, commit }, task) => {
+export const deleteTask = ({ state }, taskId) => {
     console.log(state.user.token)
     axios.delete(
-        `https://tondont-list.herokuapp.com/api/tasks/${task.id}`, {
-        headers: {
-            'Authorization': `Bearer ${state.user.token}`
-        }
-    }).then((response) => {
+        `http://sanctumwilliam.herokuapp.com/api/tasks/${taskId}`, {
+            headers: {
+                'Authorization': `Bearer ${state.user.token}`
+            }
+        }).then((response) => {
         console.log(response)
         state.msg.success = 'task destroyed'
-        const task = {
-            body: ''
-        }
-        commit('task', task)
+        router.push('/me');
     }).catch((error) => {
         console.log(error)
     });
 }
 
-export const createTask = ({ state }, form) => {
+export const createTask = ({ getters, state }, form) => {
+    console.log(getters.user.data.id)
     axios.post(
-        'https://tondont-list.herokuapp.com/api/tasks/', {
-        body: form.body
-    },
+        'http://sanctumwilliam.herokuapp.com/api/tasks/', {
+            body: form.body,
+            user_id: getters.user.data.id
+        },
         {
             headers: {
                 'Authorization': `Bearer ${state.user.token}`
@@ -175,8 +152,9 @@ export const createTask = ({ state }, form) => {
     ).then((response) => {
         console.log(response);
         state.msg.success = 'task created'
+        router.push('/tasks');
     }).catch((error) => {
         console.log(error)
-        state.msg.error = error
+        state.msg.error = "Echec d'ajout"
     });
 }
