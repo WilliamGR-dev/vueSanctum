@@ -86,7 +86,7 @@ export const logout = ({ commit, state }) => {
 export const tasks_user = ({ commit, getters, state }) => {
     console.log(state.user.token)
     axios.post(
-        'http://sanctumwilliam.herokuapp.com/api/tasksuser/',{
+        'http://sanctumwilliam.herokuapp.com/api/tasksuser',{
             user_id: getters.user.data.id
         }, {
             headers: {
