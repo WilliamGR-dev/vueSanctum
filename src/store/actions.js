@@ -140,7 +140,7 @@ export const deleteTask = ({ state }, taskId) => {
 export const createTask = ({ getters, state }, form) => {
     console.log(getters.user.data.id)
     axios.post(
-        'http://sanctumwilliam.herokuapp.com/api/tasks/', {
+        'http://sanctumwilliam.herokuapp.com/api/tasks', {
             body: form.body,
             user_id: getters.user.data.id
         },
