@@ -10,9 +10,6 @@ export const login = ({ commit, state }, form) => {
             device_name: "vue"
         }
     ).then((response) => {
-        console.log(response);
-
-        // console.log(response.data.token)
         commit('token', response.data.token)
 
         const user = {
@@ -25,9 +22,8 @@ export const login = ({ commit, state }, form) => {
         commit('data', user)
         state.msg.success = 'you are connected'
         router.push('/me');
-    }).catch((error) => {
+    }).catch(() => {
         state.msg.error = 'Mauvais identifiant'
-        console.log(error)
     });
 }
 
@@ -41,9 +37,6 @@ export const register = ({ commit, state }, form) => {
             device_name: "vue"
         }
     ).then((response) => {
-        console.log(response);
-
-        // console.log(response.data.token)
         commit('token', response.data.token)
 
         const user = {
@@ -55,8 +48,7 @@ export const register = ({ commit, state }, form) => {
         commit('data', user)
         state.msg.success = 'Compte enregsitré'
         window.location.href="/"
-    }).catch((error) => {
-        console.log(error)
+    }).catch(() => {
         state.msg.error = "L'email existe deja"
     });
 }
@@ -72,11 +64,10 @@ export const logout = ({ commit, state }) => {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        }).then((response) => {
-        console.log(response);
+        }).then(() => {
         state.msg.success = 'Vous etes déconnecté'
-    }).catch((error) => {
-        console.log(error)
+    }).catch(() => {
+        state.msg.error = "Echec de la deconnexion"
     });
     commit('token', null);
     commit('data', {});
@@ -84,7 +75,6 @@ export const logout = ({ commit, state }) => {
 }
 
 export const tasks_user = ({ commit, getters, state }) => {
-    console.log(state.user.token)
     axios.post(
         'http://sanctumwilliam.herokuapp.com/api/tasksuser',{
             user_id: getters.user.data.id
@@ -96,8 +86,8 @@ export const tasks_user = ({ commit, getters, state }) => {
         const tasks = response.data['posts']
 
         commit('tasks', tasks)
-    }).catch((error) => {
-        console.log(error)
+    }).catch(() => {
+        state.msg.error = "Echec du get"
     });
 }
 
@@ -111,34 +101,29 @@ export const updateTask = ({  state }, task) => {
                 'Authorization': `Bearer ${state.user.token}`
             }
         }
-    ).then((response) => {
-        console.log(response);
+    ).then(() => {
         state.msg.success = 'task updates'
         router.push('/me');
-    }).catch((error) => {
-        console.log(error)
-        state.msg.error = error
+    }).catch(() => {
+        state.msg.error = 'Erreur mise a jour'
     });
 }
 
 export const deleteTask = ({ state }, taskId) => {
-    console.log(state.user.token)
     axios.delete(
         `http://sanctumwilliam.herokuapp.com/api/tasks/${taskId}`, {
             headers: {
                 'Authorization': `Bearer ${state.user.token}`
             }
-        }).then((response) => {
-        console.log(response)
+        }).then(() => {
         state.msg.success = 'task destroyed'
         router.push('/me');
-    }).catch((error) => {
-        console.log(error)
+    }).catch(() => {
+        state.msg.error = "Echec de la suppresion"
     });
 }
 
 export const createTask = ({ getters, state }, form) => {
-    console.log(getters.user.data.id)
     axios.post(
         'http://sanctumwilliam.herokuapp.com/api/tasks', {
             body: form.body,
@@ -149,12 +134,10 @@ export const createTask = ({ getters, state }, form) => {
                 'Authorization': `Bearer ${state.user.token}`
             }
         }
-    ).then((response) => {
-        console.log(response);
+    ).then(() => {
         state.msg.success = 'task created'
         router.push('/tasks');
-    }).catch((error) => {
-        console.log(error)
+    }).catch(() => {
         state.msg.error = "Echec d'ajout"
     });
 }

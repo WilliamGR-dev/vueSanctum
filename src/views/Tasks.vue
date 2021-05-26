@@ -1,40 +1,46 @@
 <template>
-  <div>
+  <div class="w-100 d-flex flex-column justify-content-center align-items-centerw-100 d-flex flex-column justify-content-center align-items-center">
     <div>
-      <h1>Task: </h1>
       <form v-if="user.token">
+        <h1>Ajouter une tache: </h1>
         <p v-if="msg.success" style="color: green">{{msg.success}}</p>
         <p v-if="msg.error" style="color: red">{{msg.error}}</p>
         <div class="form-group">
-          <label for="body">Body:</label><br>
+          <label>Content:</label>
           <textarea type="text" name="body" class="form-control" id="exampleFormControlInput1" v-model="form.body"></textarea><br>
         </div>
-        <button type="button" class="btn btn-primary" v-if="form.body.length !=0" @click.prevent="create(form)">✅Ajouter✅</button>
+        <button type="button" class="btn btn-primary" v-if="form.body.length !=0" @click.prevent="create(form)">Ajouter taches</button>
       </form>
-      <div v-else>Not logged.</div>
+      <div v-else>Not connected</div>
     </div>
-    <h1>Taches a ne pas faire: </h1>
     <div v-if="user.token">
-      <br>
-      <div v-for="task in tasks" :key="task.id" class="container">
-        <br>
-        <div class="task">
-          <br>
-          <div>
-            <p>{{ task.body }}</p>
-            <button v-if="flag != task.id" type="button" @click.prevent="show(task.id)">Show Form Modify</button>
-            <button v-if="flag == task.id" type="button"  @click.prevent="hide()">Close Form Modify</button>
+      <h1>Dont do it: </h1>
+      <table class="table table-striped table-sm" style="background: rgba(128,128,128,0.05); border-radius: 5px;width: 700px">
+        <tr>
+          <td><h5>Contenu</h5></td>
+          <td></td>
+          <td><h5>Modifier</h5></td>
+          <td><h5>Supprimer</h5></td>
+        </tr>
+      <tr v-for="task in tasks" :key="task.id" >
+          <td>{{ task.body }}</td>
+          <td class="m-4">
             <form v-if="flag == task.id">
-              <input type="text" name="body" v-model="taskSelected.body">
-              <button type="button" class="btn btn-primary" @click.prevent="update(task.id)">Modifier</button>
+              <input type="text" name="body" class="m-4" v-model="taskSelected.body">
+              <button type="button" class="btn btn-primary m-4" @click.prevent="update(task.id)">Modifier</button>
             </form>
+          </td>
+          <td>
+            <button v-if="flag != task.id" type="button" class="btn btn-primary m-3" @click.prevent="show(task.id)">Show Form Modify</button>
+            <button v-if="flag == task.id" type="button"  class="btn btn-primary m-3" @click.prevent="hide()">Close Form Modify</button>
+          </td>
+          <td>
             <button type="button" class="btn btn-danger" @click.prevent="deleteT(task.id)">Supprimer</button>
-          </div>
-        </div>
-        <br><br>
-      </div>
+          </td>
+      </tr>
+      </table>
     </div>
-    <div v-else>Not logged.</div>
+    <div v-else>Pas connecter</div>
   </div>
 </template>
 
@@ -91,19 +97,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.container{
-  display: flex;
-  justify-content: center;
-}
-.task{
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 7px;
-  margin: 5px;
-  width: 50%;
-  font-weight: 600;
-}
-.task a{
-  color: #149e2b;
-}
-</style>

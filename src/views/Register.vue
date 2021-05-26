@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height: 90vh;">
     <h1>Register</h1>
     <p v-if="msg.success" style="color: green">{{msg.success}}</p>
     <p v-if="msg.error" style="color: red">{{msg.error}}</p>
